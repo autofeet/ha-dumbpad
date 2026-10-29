@@ -14,5 +14,5 @@ class SmokeVolumeTests(unittest.TestCase):
                 with smoke.test_volume('test-image') as volume:
                     self.assertEqual(volume, 'test-volume')
                     raise RuntimeError('test failed')
-            self.assertEqual(run.call_args_list[0].args[0], ['docker', 'run', '--rm', '--user', '0', '--entrypoint', 'chown', '-v', 'test-volume:/app/data', 'test-image', '1000:1000', '/app/data'])
+            self.assertEqual(run.call_args_list[0].args[0], ['docker', 'run', '--rm', '--user', '0', '--entrypoint', 'chown', '-v', 'test-volume:/app/data', 'test-image', '0:0', '/app/data'])
             self.assertEqual(run.call_args_list[-1].args[0], ['docker', 'volume', 'rm', 'test-volume'])

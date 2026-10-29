@@ -14,7 +14,8 @@ import urllib.request
 def test_volume(image):
     volume = subprocess.check_output(["docker", "volume", "create"], text=True).strip()
     try:
-        subprocess.run(["docker", "run", "--rm", "--user", "0", "--entrypoint", "chown", "-v", f"{volume}:/app/data", image, "1000:1000", "/app/data"], check=True)
+        # Match the root-owned app_config directory that Supervisor creates.
+        subprocess.run(["docker", "run", "--rm", "--user", "0", "--entrypoint", "chown", "-v", f"{volume}:/app/data", image, "0:0", "/app/data"], check=True)
         yield volume
     finally:
         subprocess.run(["docker", "volume", "rm", volume], check=False, stdout=subprocess.DEVNULL)
