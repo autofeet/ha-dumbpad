@@ -1,6 +1,6 @@
 {
   "name": "DumbPad",
-  "version": "1.0.5-4",
+  "version": "1.0.5-5",
   "slug": "dumbpad",
   "description": "DumbPad with a compact single-row toolbar and persistent notes",
   "url": "https://github.com/autofeet/ha-dumbpad",

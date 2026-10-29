@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5-5
+
+- Keep the viewport free of overflow from the upstream font measurement element.
+- Match More menu text sizes and preserve split proportions when the window height changes.
+
 ## 1.0.5-4
 
 - Initialize HA-created data directory ownership before dropping to the upstream node user.

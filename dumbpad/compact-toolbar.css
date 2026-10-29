@@ -1,4 +1,5 @@
 /* Only activate after all upstream controls have been found and mounted. */
+body:has(> .dp-compact-layout) { overflow: hidden; }
 .container.dp-compact-layout {
   box-sizing: border-box;
   width: 100%; max-width: 100%; margin: 0 auto; padding: 6px;
@@ -40,6 +41,7 @@
   margin: 0; padding: 9px 12px; border-radius: 5px; font-size: .9rem;
 }
 #dp-overflow > .icon-button > svg { width: 18px; height: 18px; flex: 0 0 18px; }
+#dp-overflow .dp-action-label { font-size: inherit; line-height: inherit; }
 #dp-overflow #delete-notepad { color: #dc3545; }
 #dp-overflow #settings-button, #dp-overflow #delete-notepad {
   border-top: 1px solid var(--secondary-color); border-radius: 0;
@@ -53,7 +55,7 @@
 .dp-compact-layout #editor-preview-wrapper > .preview-container { height: 100%; max-height: none; min-height: 0; }
 @media (max-width: 585px) {
   .dp-compact-layout #editor-preview-wrapper.split-view > .editor-container,
-  .dp-compact-layout #editor-preview-wrapper.split-view > .preview-container { height: calc((100% - 6px) / 2); flex: 0 0 auto; }
+  .dp-compact-layout #editor-preview-wrapper.split-view > .preview-container { height: calc((100% - 6px) / 2); flex: 0 1 auto; }
 }
 @media (pointer: coarse) {
   .dp-compact-toolbar > .icon-button { flex-basis: 42px; width: 42px; height: 44px; }
@@ -61,6 +63,7 @@
   #dp-overflow > .icon-button { min-height: 44px; }
 }
 @media print {
+  body:has(> .dp-compact-layout) { overflow: visible; }
   .dp-compact-layout > header { display: none !important; }
   .container.dp-compact-layout { height: auto; display: block; }
 }
