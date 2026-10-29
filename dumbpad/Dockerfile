@@ -8,3 +8,4 @@ RUN node /tmp/ha-dumbpad-inject.cjs /app/public/index.html "$(node -p 'require("
 COPY run.sh /usr/local/bin/ha-dumbpad-run
 RUN chmod 755 /usr/local/bin/ha-dumbpad-run
 ENTRYPOINT ["/usr/local/bin/ha-dumbpad-run"]
+CMD ["npm", "start"]

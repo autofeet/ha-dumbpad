@@ -24,7 +24,7 @@ def test_volume(image):
 def main(image):
     with test_volume(image) as volume:
         container = subprocess.check_output([
-            "docker", "run", "-d", "--rm", "-p", "127.0.0.1::3000",
+            "docker", "run", "-d", "-p", "127.0.0.1::3000",
             "-e", "DUMBPAD_PIN=4123", "-v", f"{volume}:/app/data", image,
         ], text=True).strip()
         try:
@@ -44,6 +44,7 @@ def main(image):
                 except (OSError, urllib.error.URLError):
                     time.sleep(1)
             else:
+                subprocess.run(["docker", "logs", "--tail", "60", container], check=False)
                 raise RuntimeError("Container did not become healthy")
             try:
                 request("/api/notepads")

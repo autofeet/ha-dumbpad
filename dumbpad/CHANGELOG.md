@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.5-3
+## 1.0.5-4
 
 - Initialize HA-created data directory ownership before dropping to the upstream node user.
 - Verify fresh root-owned storage, authentication and restart persistence in CI.
