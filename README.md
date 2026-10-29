@@ -25,4 +25,4 @@ python3 scripts/smoke_test.py ha-dumbpad:test
 DUMBPAD_HTML_FIXTURE=test-results/current.html pnpm test
 ```
 
-The frontend fixture comes from [DumbWareio/DumbPad](https://github.com/DumbWareio/DumbPad), licensed under MIT; see LICENSE.upstream. The underlying application is not otherwise forked or modified.
+The frontend fixture comes from [DumbWareio/DumbPad](https://github.com/DumbWareio/DumbPad), licensed under GPLv3; see LICENSE.upstream. The HA image adds the toolbar and uses its packaged version for the original PWA cache refresh.

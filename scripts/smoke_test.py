@@ -45,8 +45,7 @@ def main(image):
                 raise AssertionError("PIN protection is missing")
             assert json.loads(request("/api/verify-pin", {"pin": "4123"}))["success"]
             html = request("/").decode()
-            packaged = json.loads(request("/api/config"))["version"]
-            assert f"compact-toolbar.css?v={packaged}" in html and f"compact-toolbar.js?v={packaged}" in html
+            assert 'href="Assets/compact-toolbar.css"' in html and 'src="Assets/compact-toolbar.js"' in html
             for filename in ["compact-toolbar.js", "compact-toolbar.css"]:
                 assert len(request("/Assets/" + filename)) > 500
             Path("test-results").mkdir(exist_ok=True)

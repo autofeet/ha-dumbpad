@@ -53,7 +53,7 @@
 .dp-compact-layout #editor-preview-wrapper > .preview-container { height: 100%; max-height: none; min-height: 0; }
 @media (max-width: 585px) {
   .dp-compact-layout #editor-preview-wrapper.split-view > .editor-container,
-  .dp-compact-layout #editor-preview-wrapper.split-view > .preview-container { height: 50%; flex: 1 1 0; }
+  .dp-compact-layout #editor-preview-wrapper.split-view > .preview-container { height: calc((100% - 6px) / 2); flex: 0 0 auto; }
 }
 @media (pointer: coarse) {
   .dp-compact-toolbar > .icon-button { flex-basis: 42px; width: 42px; height: 44px; }

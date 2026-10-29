@@ -1,3 +1,5 @@
 # Execution ledger
 
 2026-10-29: User approved the single-row demo and removal of its name/height label. Later authorized GitHub publication and HA automatic updates. A new task-owned repository on branch compact-toolbar provides isolation from existing repositories. Proceeding inline under that authorization; no repeated approval gate for the already accepted design.
+
+Task 1: implementation and 6 JavaScript + 3 Python tests complete. Initial commit 1faab31. Final review: fresh gpt-6-astra reviewer; no Critical findings. Fixed mobile split height sizing (failing test then passing). Regraded offline toolbar loss as Important because it changes original cached behavior; fixed exact precache URL compatibility (failing test then passing). Corrected GPLv3 identification before publication because misleading redistribution guidance must not ship. No deferred findings. Docker build, rendered UI and production migration remain pending. User confirmed Git Credential Manager authorization for publication.

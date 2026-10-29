@@ -14,6 +14,18 @@ function mount(window) {
   window.eval(fs.readFileSync(filename, 'utf8'));
   window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
 }
+test('mobile split panes retain the height sizing used by the upstream drag handler', () => {
+  const { dom, window, document } = setup();
+  mount(window);
+  const css = fs.readFileSync(path.join(__dirname, '../dumbpad/compact-toolbar.css'), 'utf8');
+  const mobileRules = css.match(/@media \(max-width: 585px\) \{([\s\S]*?)\n\}/)[1];
+  const style = document.createElement('style'); style.textContent = mobileRules; document.head.append(style);
+  document.getElementById('editor-preview-wrapper').classList.add('split-view');
+  const pane = document.querySelector('.editor-container');
+  pane.style.height = '200px';
+  assert.equal(window.getComputedStyle(pane).flexBasis, 'auto', 'inline height must control flex pane sizing');
+  dom.window.close();
+});
 test('mount preserves original buttons and their handlers, in the approved order', () => {
   const { dom, window, document } = setup();
   const original = document.getElementById('download-notepad');

@@ -7,7 +7,7 @@ if (!/^\d+\.\d+\.\d+-\d+$/.test(version || '')) throw new Error('Packaged versio
 let html = fs.readFileSync(filename, 'utf8');
 if (!html.includes('</head>') || !html.includes('id="notepad-selector"')) throw new Error('Unsupported upstream HTML contract');
 if (!html.includes('compact-toolbar.css')) {
-  html = html.replace('</head>', `<link rel="stylesheet" href="Assets/compact-toolbar.css?v=${version}">\n<script defer src="Assets/compact-toolbar.js?v=${version}"></script>\n</head>`);
+  html = html.replace('</head>', '<link rel="stylesheet" href="Assets/compact-toolbar.css">\n<script defer src="Assets/compact-toolbar.js"></script>\n</head>');
   fs.writeFileSync(filename, html);
 }
 const packageFile = path.join(path.dirname(filename), '../package.json');
