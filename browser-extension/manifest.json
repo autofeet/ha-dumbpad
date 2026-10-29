@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "DumbPad 侧栏",
+  "version": "0.1.0",
+  "description": "点击图标，在浏览器侧栏打开你的 HA DumbPad 笔记。",
+  "minimum_chrome_version": "116",
+  "permissions": ["sidePanel"],
+  "host_permissions": ["https://dumbpad.piggydamn.club/*"],
+  "background": {"service_worker": "background.js"},
+  "action": {"default_title": "打开 DumbPad 侧栏", "default_icon": "icon.png"},
+  "icons": {"16": "icon.png", "32": "icon.png", "48": "icon.png", "128": "icon.png"},
+  "side_panel": {"default_path": "panel.html"},
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; frame-src https://dumbpad.piggydamn.club:99;"
+  }
+}
