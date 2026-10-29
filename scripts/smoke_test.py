@@ -1,23 +1,30 @@
 """Exercise a disposable real container. Never use production volumes."""
 import http.cookiejar
+from contextlib import contextmanager
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
-import tempfile
 import time
 import urllib.error
 import urllib.request
 
 
+@contextmanager
+def test_volume(image):
+    volume = subprocess.check_output(["docker", "volume", "create"], text=True).strip()
+    try:
+        subprocess.run(["docker", "run", "--rm", "--user", "0", "--entrypoint", "chown", "-v", f"{volume}:/app/data", image, "1000:1000", "/app/data"], check=True)
+        yield volume
+    finally:
+        subprocess.run(["docker", "volume", "rm", volume], check=False, stdout=subprocess.DEVNULL)
+
+
 def main(image):
-    with tempfile.TemporaryDirectory(prefix="ha-dumbpad-smoke-") as folder:
-        if hasattr(os, "chown"):
-            os.chown(folder, 1000, 1000)
+    with test_volume(image) as volume:
         container = subprocess.check_output([
             "docker", "run", "-d", "--rm", "-p", "127.0.0.1::3000",
-            "-e", "DUMBPAD_PIN=4123", "-v", f"{folder}:/app/data", image,
+            "-e", "DUMBPAD_PIN=4123", "-v", f"{volume}:/app/data", image,
         ], text=True).strip()
         try:
             port = subprocess.check_output(["docker", "port", container, "3000"], text=True).strip().rsplit(":", 1)[1]
