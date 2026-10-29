@@ -64,14 +64,20 @@ def main(image):
             assert json.loads(request("/api/notes/" + note["id"]))["content"] == content
             assert len(json.loads(request("/api/notepads"))["notepads_list"]) == len(initial) + 1
             subprocess.run(["docker", "restart", container], check=True, stdout=subprocess.DEVNULL)
+            # Docker can assign another ephemeral host port when restarting.
+            port = subprocess.check_output(["docker", "port", container, "3000"], text=True).strip().rsplit(":", 1)[1]
+            base = f"http://127.0.0.1:{port}"
+            last_error = None
             for attempt in range(60):
                 try:
                     assert json.loads(request("/api/notes/" + note["id"]))["content"] == content
                     break
-                except (OSError, urllib.error.URLError):
+                except (OSError, urllib.error.URLError) as error:
+                    last_error = error
                     time.sleep(1)
             else:
-                raise RuntimeError("Persistence failed after restart")
+                subprocess.run(["docker", "logs", "--tail", "60", container], check=False)
+                raise RuntimeError(f"Persistence failed after restart: {last_error}")
             print("PASS: health, PIN, frontend assets, note write/read and restart persistence")
         finally:
             subprocess.run(["docker", "rm", "-f", container], stdout=subprocess.DEVNULL, check=False)
