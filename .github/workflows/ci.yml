@@ -1,0 +1,26 @@
+name: Validate DumbPad Compact
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install -g pnpm@11.25.0 --ignore-scripts
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm test
+      - run: python3 -m unittest discover -s tests -v
+      - run: docker build --pull -t ha-dumbpad:test dumbpad
+      - run: python3 scripts/smoke_test.py ha-dumbpad:test
+      - name: Test toolbar against the real image HTML
+        run: DUMBPAD_HTML_FIXTURE=test-results/current.html pnpm test
