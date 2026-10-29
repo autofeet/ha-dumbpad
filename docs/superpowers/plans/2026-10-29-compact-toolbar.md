@@ -1,6 +1,6 @@
 # DumbPad Compact Toolbar Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Ship the approved compact toolbar through GitHub and enable HA automatic updates.
 
@@ -28,19 +28,19 @@
 ## Tasks
 
 ### 1. Frontend overlay and regression tests
-- [ ] Add failing jsdom tests for retained action identity/listeners, compact action order, idempotence, Escape/outside-click focus, and keyboard navigation.
-- [ ] Run tests and confirm failure before adding the overlay.
-- [ ] Add compact-toolbar.js and compact-toolbar.css; inject assets during image build without replacing upstream application code.
-- [ ] Run tests; inspect a local fixture at 320, 520 and desktop widths through the browser.
+- [x] Add failing jsdom tests for retained action identity/listeners, compact action order, idempotence, Escape/outside-click focus, and keyboard navigation.
+- [x] Run tests and confirm failure before adding the overlay.
+- [x] Add compact-toolbar.js and compact-toolbar.css; inject assets during image build without replacing upstream application code.
+- [x] Run tests; inspect a local fixture at 320, 520 and desktop widths through the browser.
 
 ### 2. GitHub delivery and update checks
-- [ ] Add HA config with preserved PIN/TZ schema and app_config mapping, icon, repository metadata, documentation and Dockerfile.
-- [ ] Add daily stable-image checks with protected semantic-version/digest handling and build/smoke/UI tests before committing an update.
-- [ ] Publish to autofeet/ha-dumbpad and verify the CI run succeeds before live installation.
+- [x] Add HA config with preserved PIN/TZ schema and app_config mapping, icon, repository metadata, documentation and Dockerfile.
+- [x] Add daily stable-image checks with protected semantic-version/digest handling and build/smoke/UI tests before committing an update.
+- [x] Publish to autofeet/ha-dumbpad and verify the CI run succeeds before live installation.
 
 ### 3. Deployment
-- [ ] Back up the running local app, its options/data, and local definitions.
-- [ ] Register the GitHub repository, build/install the new app and stop the old app for final data transfer.
-- [ ] Compare all data-file hashes, preserve PIN/options, start the new app, and validate original HTTPS domain, controls, data reads and restart persistence.
-- [ ] Enable auto-update and watchdog; disable old local app boot while retaining its data for rollback.
-- [ ] Record versions, verification and backups; commit source and leave the tested deployed result.
+- [x] Back up the running local app, its options/data, and local definitions.
+- [x] Register the GitHub repository, build/install the new app and stop the old app for final data transfer.
+- [x] Compare all data-file hashes, preserve PIN/options, start the new app, and validate original HTTPS domain, controls, data reads and restart persistence.
+- [x] Enable auto-update and watchdog; disable old local app boot while retaining its data for rollback.
+- [x] Record versions, verification and backups; commit source and leave the tested deployed result.
