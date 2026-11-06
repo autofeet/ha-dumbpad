@@ -10,10 +10,26 @@ function worker(){
   const event=n=>({addListener:fn=>events[n]=fn});
   const chrome={sidePanel:{setPanelBehavior:async o=>options.push(o),setOptions:async o=>options.push(o),open:async o=>opens.push(o),close:async o=>closed.push(o),onOpened:event('opened'),onClosed:event('closed')},runtime:{onInstalled:event('install'),onStartup:event('startup')},action:{onClicked:event('click')},tabs:{onUpdated:event('update'),onActivated:event('activate'),onRemoved:event('remove'),get:async id=>({id,active:true})},storage:{local:{get:async k=>({[k]:memory[k]}),set:async o=>Object.assign(memory,o)}}};
   const context=vm.createContext({chrome,console,URL});
+  chrome.sidePanel.getOptions=async()=>({enabled:false});
   context.importScripts=f=>vm.runInContext(read(f),context);
   vm.runInContext(read('background.js'),context);
-  return {events,options,opens,closed,memory,context};
+  return {events,options,opens,closed,memory,context,chrome};
 }
+test('manual close after worker suspension still remembers the actual page',async()=>{
+  const w=worker(),tab={id:7,active:true,url:'https://example.com/known'};
+  const key=w.context.contextForPage(tab);
+  w.memory['state:'+key]={open:true};
+  w.chrome.tabs.get=async()=>tab;
+  await w.events.closed({tabId:7,path:'panel.html?context='+key});
+  assert.equal(w.memory['state:'+key].open,false);
+});
+test('worker suspension does not reset an already configured page panel',async()=>{
+  const w=worker(),tab={id:7,url:'https://example.com/known'};
+  const key=w.context.contextForPage(tab);
+  w.chrome.sidePanel.getOptions=async()=>({enabled:true,path:'panel.html?context='+key});
+  await w.events.update(7,{url:tab.url},tab);
+  assert.equal(w.options.filter(o=>o.tabId===7).length,0);
+});
 test('name is DumbPad and only contextual page access and local memory are added',()=>{
   const m=JSON.parse(read('manifest.json'));
   assert.equal(m.name,'DumbPad');
@@ -61,11 +77,14 @@ test('open state is remembered per page and restored as a native option without 
 });
 test('manual close is remembered while navigation hides preserve the old page state',async()=>{
   const w=worker();const tab={id:7,url:'https://example.com/known'};await w.events.click(tab);
+  let currentURL=tab.url;
+  w.chrome.tabs.get=async id=>({id,active:true,url:currentURL});
   const key=w.context.contextForPage(tab);const info={tabId:7,path:'panel.html?context='+key};
   await w.events.opened(info);
   await w.events.update(7,{url:'https://example.com/new'},{url:'https://example.com/new'});
+  currentURL='https://example.com/new';
   await w.events.closed(info);assert.equal(w.memory['state:'+key].open,true);
-  await w.events.update(7,{url:tab.url},{url:tab.url});await w.events.opened(info);await w.events.closed(info);
+  currentURL=tab.url;await w.events.update(7,{url:tab.url},{url:tab.url});await w.events.opened(info);await w.events.closed(info);
   assert.equal(w.memory['state:'+key].open,false);
 });
 test('new internal pages have separate transient contexts',async()=>{

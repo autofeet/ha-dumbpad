@@ -25,7 +25,6 @@ function contextForPage(tab) {
 }
 
 const contexts = new Map();
-const visible = new Map();
 const revisions = new Map();
 function rememberOpen(key, open) {
   if (!key?.startsWith('page-')) return Promise.resolve();
@@ -43,18 +42,11 @@ chrome.action.onClicked.addListener(async tab => {
   revisions.set(tab.id, token);
   contexts.set(tab.id, key);
   try {
-    if (visible.get(tab.id) === key) {
-      await chrome.sidePanel.close({ tabId: tab.id });
-      visible.delete(tab.id);
-      await rememberOpen(key, false);
-      return;
-    }
     // Invoke both APIs before awaiting: awaiting setOptions can lose the gesture.
     const configured = chrome.sidePanel.setOptions({ tabId: tab.id, path: `panel.html?context=${key}`, enabled: true });
     const opened = chrome.sidePanel.open({ tabId: tab.id });
     await Promise.all([configured, opened]);
-    if (revisions.get(tab.id) === token) visible.set(tab.id, key);
-    await rememberOpen(key, true);
+    if (revisions.get(tab.id) === token) await rememberOpen(key, true);
   } catch (error) { console.error('Unable to open DumbPad:', error); }
 });
 
@@ -64,8 +56,11 @@ async function followPage(tabId, url) {
   const token = {};
   revisions.set(tabId, token);
   contexts.set(tabId, key);
-  visible.delete(tabId);
   try {
+    // Native options survive service-worker suspension; in-memory maps do not.
+    const current = await chrome.sidePanel.getOptions({ tabId });
+    if (revisions.get(tabId) !== token) return;
+    if (key.startsWith('page-') && current.enabled && eventContext(current) === key) return;
     await chrome.sidePanel.setOptions({ tabId, enabled: false });
     if (!key.startsWith('page-')) return;
     const saved = (await chrome.storage.local.get(`state:${key}`))[`state:${key}`];
@@ -84,22 +79,24 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   catch { /* The activated tab may already have closed. */ }
 });
 chrome.tabs.onRemoved.addListener(tabId => {
-  contexts.delete(tabId); visible.delete(tabId); revisions.delete(tabId);
+  contexts.delete(tabId); revisions.delete(tabId);
 });
-chrome.sidePanel.onOpened.addListener(info => {
+chrome.sidePanel.onOpened.addListener(async info => {
   const key = eventContext(info);
-  if (info.tabId === undefined || !key || contexts.get(info.tabId) !== key) return;
-  visible.set(info.tabId, key);
-  return rememberOpen(key, true);
+  if (info.tabId === undefined || !key) return;
+  try {
+    const tab = await chrome.tabs.get(info.tabId);
+    if (contextForPage(tab) !== key) return;
+    await rememberOpen(key, true);
+  } catch { /* Closed tab. */ }
 });
 chrome.sidePanel.onClosed.addListener(async info => {
   const key = eventContext(info);
-  if (info.tabId === undefined || !key || contexts.get(info.tabId) !== key) return;
-  visible.delete(info.tabId);
+  if (info.tabId === undefined || !key) return;
   try {
     const tab = await chrome.tabs.get(info.tabId);
     // Tab switches and navigation are not an explicit choice to close this page's Pad.
-    if (!tab.active || contexts.get(info.tabId) !== key) return;
+    if (!tab.active || contextForPage(tab) !== key) return;
     await rememberOpen(key, false);
   } catch { /* Closing an entire tab keeps its saved page state. */ }
 });

@@ -4,6 +4,24 @@
 
 ## 安装
 
+### 浏览器兼容范围
+
+| 浏览器 | 安装包 | 行为与验证范围 |
+| --- | --- | --- |
+| Chrome、Edge | `dumbpad-sidepanel-0.2.0.zip` | Chromium 142+ 原生侧栏；自动化检查通过，真实浏览器验收另行记录 |
+| Brave 等 Chromium 浏览器 | 同 Chrome 包 | 需要提供完整 `sidePanel` 接口；尚未逐款实测 |
+| Firefox 桌面版 | `dumbpad-sidepanel-0.2.0-firefox.zip` | 128+，使用 Firefox 原生侧栏；新页面不加载 Pad，但侧栏空框可能保留；尚未实机验收和 Mozilla 签名 |
+| Opera | `dumbpad-sidepanel-0.2.0-opera.zip` | 兼容入口：点击打开普通笔记标签页；本包不提供原生侧栏与按网页记忆 |
+| Safari、手机浏览器 | 无 | 本版不提供安装包，不宣称原生侧栏兼容 |
+
+Firefox 测试安装：解压 Firefox 包，在 `about:debugging#/runtime/this-firefox` 选择“临时载入附加组件”，选择其中的 `manifest.json`。临时扩展会在浏览器重启后移除；长期安装需要 Mozilla 签名后的版本。Chrome 包不能直接用于 Firefox。
+
+Firefox 的 `sidebarAction.open()` 和 `close()` 都要求用户操作。切到未记录或已关闭的页面时，插件会替换为不加载笔记的本地提示页；浏览器侧栏空框可能保留，点击浏览器的关闭按钮收起。返回已记录页面会恢复笔记配置；若原生侧栏已关闭，需点击工具栏图标展开。
+
+Opera 的侧栏接口与 Firefox 不完全相同，当前明确采用普通标签页入口；避免安装后遇到无法开关或跨页面常驻的面板。
+
+### Chrome / Edge
+
 1. 解压 ZIP。打开 Chrome 的 `chrome://extensions` 或 Edge 的 `edge://extensions`。
 2. 开启“开发者模式”，点击“加载已解压的扩展程序”。
 3. 选择含有 `manifest.json` 的文件夹；直接使用仓库时选择 `browser-extension` 文件夹。
@@ -20,11 +38,11 @@
 - 浏览器新标签页、设置页等内部页面不保留跨会话记录。
 - 插件名称为 DumbPad；笔记内工具栏、编辑区和菜单圆角为 4px，笔记下拉框为 3px。
 
-需要 Chromium 142 或更新版本，以支持原生面板的打开/关闭事件。Chrome 与 Edge 共用这一份源码；实际测试记录以交付说明为准。
+Chromium 包需要 142 或更新版本，以支持原生面板的打开/关闭事件。Firefox 包使用独立后台入口；实际测试记录以交付说明为准。不同浏览器的本地记录相互独立，不做跨浏览器同步。
 
 ## 数据与权限
 
-- 使用 `sidePanel`、`tabs`、`storage` 和 `https://dumbpad.piggydamn.club/*` 的站点权限。
+- Chromium 包使用 `sidePanel`、`tabs`、`storage` 和 `https://dumbpad.piggydamn.club/*` 的站点权限；Firefox 使用 `sidebar_action`，不申请 Chrome 专有的 `sidePanel` 权限。
 - `tabs` 用于在切换或跳转时获取打开标签页的地址，以匹配此前保存的状态；不调用浏览历史 API，也不读取其他网站正文。浏览器可能将此权限显示为“读取浏览记录”。`storage` 只保存本地网页标识、展开状态和笔记编号。
 - 站点权限用于嵌入页面的登录与存储兼容。Chrome 的站点权限匹配不区分端口，但框架地址和扩展 CSP 固定为 HTTPS 99 端口。
 - 仅在 DumbPad 嵌入页运行样式和笔记选择桥接脚本，不向其他网站注入脚本。不申请 Cookie API 或剪贴板读取权限。

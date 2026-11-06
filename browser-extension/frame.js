@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const extensionAPI = globalThis.browser || globalThis.chrome;
   if (window.parent === window || !new URL(location.href).searchParams.has('dumbpad_embed')) return;
   document.documentElement.dataset.dumbpadEmbed = 'true';
   const requested = new URL(location.href).searchParams.get('id');
@@ -12,7 +13,7 @@
     if (requested && !previous && !userChanged && value !== requested &&
         [...selector.options].some(option => option.value === requested)) return;
     previous = value;
-    window.parent.postMessage({ type: 'dumbpad-note-selected', noteId: value }, chrome.runtime.getURL(''));
+    window.parent.postMessage({ type: 'dumbpad-note-selected', noteId: value }, extensionAPI.runtime.getURL(''));
   }
   document.addEventListener('change', event => {
     if (event.target.id === 'notepad-selector') { userChanged = true; report(); }
