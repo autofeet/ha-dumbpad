@@ -4,7 +4,7 @@ from pathlib import Path
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = ('manifest.json', 'background.js', 'panel.html', 'panel.css', 'icon.png', 'README.md')
+FILES = ('manifest.json', 'background.js', 'panel.html', 'panel.css', 'panel.js', 'frame.js', 'frame.css', 'icon.png', 'README.md')
 
 
 def package():

@@ -1,0 +1,6 @@
+/* Scoped to the plugin iframe; ordinary DumbPad tabs retain their own layout. */
+html[data-dumbpad-embed] .dp-compact-layout > header,
+html[data-dumbpad-embed] .dp-compact-layout #editor-preview-wrapper > .editor-container,
+html[data-dumbpad-embed] .dp-compact-layout #editor-preview-wrapper > .preview-container,
+html[data-dumbpad-embed] #dp-overflow { border-radius: 4px; }
+html[data-dumbpad-embed] .dp-compact-layout #notepad-selector { border-radius: 3px; }
