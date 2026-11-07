@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DumbPad",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "点击图标，在浏览器侧栏打开你的 HA DumbPad 笔记。",
   "minimum_chrome_version": "142",
   "permissions": ["sidePanel", "tabs", "storage"],
@@ -9,7 +9,6 @@
   "background": {"service_worker": "background-loader.js"},
   "action": {"default_title": "打开 DumbPad", "default_icon": "icon.png"},
   "icons": {"16": "icon.png", "32": "icon.png", "48": "icon.png", "128": "icon.png"},
-  "side_panel": {"default_path": "panel.html"},
   "content_scripts": [{
     "matches": ["https://dumbpad.piggydamn.club/*"],
     "all_frames": true,

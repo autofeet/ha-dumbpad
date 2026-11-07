@@ -1,4 +1,4 @@
-# DumbPad · 轻量版 0.2.0
+# DumbPad · 轻量版 0.2.1
 
 点击浏览器工具栏里的蓝色 DumbPad 图标，在原生侧栏打开现有 HA 笔记。沿用网页 PIN；不保存 PIN、不另存笔记、不读取其他网站、不添加额外标题栏。
 
@@ -8,10 +8,10 @@
 
 | 浏览器 | 安装包 | 行为与验证范围 |
 | --- | --- | --- |
-| Chrome、Edge | `dumbpad-sidepanel-0.2.0.zip` | Chromium 142+ 原生侧栏；自动化检查通过，真实浏览器验收另行记录 |
+| Chrome、Edge | `dumbpad-sidepanel-0.2.1.zip` | Chromium 142+ 原生侧栏；自动化检查通过，真实浏览器验收另行记录 |
 | Brave 等 Chromium 浏览器 | 同 Chrome 包 | 需要提供完整 `sidePanel` 接口；尚未逐款实测 |
-| Firefox 桌面版 | `dumbpad-sidepanel-0.2.0-firefox.zip` | 128+，使用 Firefox 原生侧栏；新页面不加载 Pad，但侧栏空框可能保留；尚未实机验收和 Mozilla 签名 |
-| Opera | `dumbpad-sidepanel-0.2.0-opera.zip` | 兼容入口：点击打开普通笔记标签页；本包不提供原生侧栏与按网页记忆 |
+| Firefox 桌面版 | `dumbpad-sidepanel-0.2.1-firefox.zip` | 128+，使用 Firefox 原生侧栏；新页面不加载 Pad，但侧栏空框可能保留；尚未实机验收和 Mozilla 签名 |
+| Opera | `dumbpad-sidepanel-0.2.1-opera.zip` | 兼容入口：点击打开普通笔记标签页；本包不提供原生侧栏与按网页记忆 |
 | Safari、手机浏览器 | 无 | 本版不提供安装包，不宣称原生侧栏兼容 |
 
 Firefox 测试安装：解压 Firefox 包，在 `about:debugging#/runtime/this-firefox` 选择“临时载入附加组件”，选择其中的 `manifest.json`。临时扩展会在浏览器重启后移除；长期安装需要 Mozilla 签名后的版本。Chrome 包不能直接用于 Firefox。
@@ -50,6 +50,8 @@ Chromium 包需要 142 或更新版本，以支持原生面板的打开/关闭�
 - HA 服务必须可访问。本版不提供独立离线笔记或单独的同步逻辑。
 
 ## 更新与排查
+
+0.2.1 修复 Chromium 全局默认面板残留：移除全局面板声明，只由标签页显式创建面板；初始化时关闭旧版全局实例。此修复不改变已保存的笔记编号和页面记录。更新文件后重新加载扩展，确认管理页版本为 0.2.1。
 
 HA 网页继续沿用现有 GitHub 自动更新。这个“加载已解压”扩展本身不会从 GitHub 自动安装新版；更新扩展文件后，请在扩展管理页点击“重新加载”。
 

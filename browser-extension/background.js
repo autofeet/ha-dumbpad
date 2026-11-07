@@ -5,6 +5,12 @@ async function initialize() {
   try {
     await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
     await chrome.sidePanel.setOptions({ enabled: false });
+    // Older versions declared a global default_path. Clear its native instance
+    // without closing tab-specific panels or changing their saved page state.
+    const windows = await chrome.windows.getAll();
+    await Promise.all(windows.map(window =>
+      chrome.sidePanel.close({ windowId: window.id }).catch(() => {})
+    ));
   } catch (error) {
     console.error('Unable to initialize DumbPad:', error);
   }

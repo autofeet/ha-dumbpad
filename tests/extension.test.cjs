@@ -15,7 +15,7 @@ test('extension requests only sidePanel and the DumbPad host, with local entry p
   assert.equal(m.action.default_popup, undefined);
   assert.deepEqual(m.content_scripts[0].matches, m.host_permissions);
   assert.ok(m.content_security_policy.extension_pages.includes('frame-src https://dumbpad.piggydamn.club:99;'));
-  for (const file of [m.background.service_worker, m.side_panel.default_path, ...Object.values(m.icons)]) {
+  for (const file of [m.background.service_worker, 'panel.html', ...Object.values(m.icons)]) {
     assert.ok(fs.existsSync(path.join(root, file)), file);
   }
 });
@@ -23,7 +23,7 @@ test('extension requests only sidePanel and the DumbPad host, with local entry p
 test('service worker disables automatic action handling on initialization and lifecycle events', async () => {
   const handlers = {}; const calls = [];
   const event={addListener:()=>{}};
-  const chrome = { sidePanel: {setPanelBehavior: async options => calls.push(options),setOptions:async()=>{},onOpened:event,onClosed:event}, action:{onClicked:event},tabs:{onUpdated:event,onActivated:event,onRemoved:event},runtime: {
+  const chrome = { windows:{getAll:async()=>[]},sidePanel: {setPanelBehavior: async options => calls.push(options),setOptions:async()=>{},onOpened:event,onClosed:event}, action:{onClicked:event},tabs:{onUpdated:event,onActivated:event,onRemoved:event},runtime: {
     onInstalled: {addListener: fn => handlers.installed = fn},
     onStartup: {addListener: fn => handlers.startup = fn}
   }};
@@ -35,7 +35,7 @@ test('service worker disables automatic action handling on initialization and li
 
 test('side panel embeds the real HTTPS app without PIN injection or remote extension scripts', () => {
   const m = manifest();
-  const dom = new JSDOM(fs.readFileSync(path.join(root, m.side_panel.default_path), 'utf8'));
+  const dom = new JSDOM(fs.readFileSync(path.join(root, 'panel.html'), 'utf8'));
   const { document } = dom.window;
   assert.equal(document.querySelectorAll('iframe').length, 1);
   const frame = document.querySelector('iframe');

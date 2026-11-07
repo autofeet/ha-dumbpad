@@ -11,10 +11,20 @@ function worker(){
   const chrome={sidePanel:{setPanelBehavior:async o=>options.push(o),setOptions:async o=>options.push(o),open:async o=>opens.push(o),close:async o=>closed.push(o),onOpened:event('opened'),onClosed:event('closed')},runtime:{onInstalled:event('install'),onStartup:event('startup')},action:{onClicked:event('click')},tabs:{onUpdated:event('update'),onActivated:event('activate'),onRemoved:event('remove'),get:async id=>({id,active:true})},storage:{local:{get:async k=>({[k]:memory[k]}),set:async o=>Object.assign(memory,o)}}};
   const context=vm.createContext({chrome,console,URL});
   chrome.sidePanel.getOptions=async()=>({enabled:false});
+  chrome.windows={getAll:async()=>[{id:10},{id:20}]};
   context.importScripts=f=>vm.runInContext(read(f),context);
   vm.runInContext(read('background.js'),context);
   return {events,options,opens,closed,memory,context,chrome};
 }
+test('manifest has no global panel fallback that can follow every tab',()=>{
+  assert.equal(JSON.parse(read('manifest.json')).side_panel,undefined);
+});
+test('initialization closes legacy global panels without closing any tab-specific panel',async()=>{
+  const w=worker();await w.events.install();
+  assert.ok(w.closed.some(o=>o.windowId===10&&o.tabId===undefined));
+  assert.ok(w.closed.some(o=>o.windowId===20&&o.tabId===undefined));
+  assert.ok(w.closed.every(o=>o.tabId===undefined));
+});
 test('manual close after worker suspension still remembers the actual page',async()=>{
   const w=worker(),tab={id:7,active:true,url:'https://example.com/known'};
   const key=w.context.contextForPage(tab);
